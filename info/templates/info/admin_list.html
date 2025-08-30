@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理者用リスト</title>
+</head>
+<body>
+    <h1>意見一覧</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>送信日時</th>
+                <th>業態</th>
+                <th>業態（その他）</th>
+                <th>システム名</th>
+                <th>マニュアル</th>
+                <th>連絡先</th>
+                <th>その他</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in requests %}
+            <tr>
+                <!-- 日付を「2025年8月23日 11時55分45秒」形式に -->
+                <td>{{ r.created_at|date:"Y年n月j日 G時i分s秒" }}</td>
+                <td>{{ r.industry }}</td>
+                <td>
+                    {% if r.industry == "その他" %}
+                        {{ r.other_industry|default:"None" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ r.system_name }}</td>
+                <td>
+                    {% if r.manual_file %}
+                        <a href="{{ r.manual_file.url }}">{{ r.manual_file.name }}</a>
+                    {% endif %}
+                </td>
+                <td>{{ r.contact_info }}</td>
+                <td>{{ r.other|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{% url 'info:export_excel' %}">Excelで保存</a>
+</body>
+</html>
