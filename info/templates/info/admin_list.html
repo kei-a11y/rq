@@ -1,49 +1,363 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理者用リスト</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Meiryo UI', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin: -20px -20px 30px -20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            font-weight: 300;
+            margin: 0;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        th:last-child {
+            border-right: none;
+        }
+        
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+        }
+        
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9ff;
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #fafbff;
+        }
+        
+        tbody tr:nth-child(even):hover {
+            background-color: #f0f2ff;
+        }
+        
+        .date-cell {
+            white-space: nowrap;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .industry-cell {
+            font-weight: 500;
+        }
+        
+        .system-cell {
+            color: #007bff;
+            font-weight: 600;
+        }
+        
+        .file-link {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .file-link:hover {
+            background: #218838;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        .contact-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        
+        .other-cell {
+            max-width: 250px;
+            word-wrap: break-word;
+            color: #666;
+        }
+        
+        .no-data {
+            color: #adb5bd;
+            font-style: italic;
+        }
+        
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .export-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .export-btn:hover {
+            background: linear-gradient(135deg, #218838, #1da88a);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 4em;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 13px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+            
+            .contact-cell, .other-cell {
+                max-width: 150px;
+            }
+        }
+        
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .table-container {
+            animation: fadeIn 0.6s ease;
+        }
+        
+        .stat-card {
+            animation: fadeIn 0.6s ease;
+        }
+        
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+    </style>
 </head>
 <body>
-    <h1>意見一覧</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>送信日時</th>
-                <th>業態</th>
-                <th>業態（その他）</th>
-                <th>システム名</th>
-                <th>マニュアル</th>
-                <th>連絡先</th>
-                <th>その他</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in requests %}
-            <tr>
-                <!-- 日付を「2025年8月23日 11時55分45秒」形式に -->
-                <td>{{ r.created_at|date:"Y年n月j日 G時i分s秒" }}</td>
-                <td>{{ r.industry }}</td>
-                <td>
-                    {% if r.industry == "その他" %}
-                        {{ r.other_industry|default:"None" }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>{{ r.system_name }}</td>
-                <td>
-                    {% if r.manual_file %}
-                        <a href="{{ r.manual_file.url }}">{{ r.manual_file.name }}</a>
-                    {% endif %}
-                </td>
-                <td>{{ r.contact_info }}</td>
-                <td>{{ r.other|default:"-" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br>
-    <a href="{% url 'info:export_excel' %}">Excelで保存</a>
+    <div class="container">
+        <div class="header">
+            <h1>📊 意見・要望管理システム</h1>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ requests|length }}</div>
+                <div class="stat-label">総件数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    {% with manual_count=0 %}
+                        {% for r in requests %}
+                            {% if r.manual_file %}
+                                {% with manual_count=manual_count|add:1 %}{% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ manual_count }}
+                    {% endwith %}
+                </div>
+                <div class="stat-label">マニュアル添付件数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    {% now "Y年n月j日" %}
+                </div>
+                <div class="stat-label">更新日</div>
+            </div>
+        </div>
+        
+        {% if requests %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>📅 送信日時</th>
+                        <th>🏢 業態</th>
+                        <th>📝 業態（その他）</th>
+                        <th>💻 システム名</th>
+                        <th>📎 マニュアル</th>
+                        <th>📧 連絡先</th>
+                        <th>💭 その他</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td class="date-cell">{{ r.created_at|date:"Y年n月j日 G時i分s秒" }}</td>
+                        <td class="industry-cell">{{ r.industry }}</td>
+                        <td>
+                            {% if r.industry == "その他" %}
+                                {{ r.other_industry|default:"<span class='no-data'>未記入</span>" }}
+                            {% else %}
+                                <span class="no-data">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="system-cell">{{ r.system_name }}</td>
+                        <td>
+                            {% if r.manual_file %}
+                                <a href="{{ r.manual_file.url }}" class="file-link" target="_blank">
+                                    📄 ファイルを開く
+                                </a>
+                            {% else %}
+                                <span class="no-data">なし</span>
+                            {% endif %}
+                        </td>
+                        <td class="contact-cell">{{ r.contact_info|default:"<span class='no-data'>未記入</span>" }}</td>
+                        <td class="other-cell">{{ r.other|default:"<span class='no-data'>-</span>" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="table-container">
+            <div class="empty-state">
+                <div style="font-size: 4em; margin-bottom: 20px;">📋</div>
+                <h3>まだデータがありません</h3>
+                <p>意見・要望が送信されると、ここに表示されます。</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="{% url 'info:export_excel' %}" class="export-btn">
+                📊 Excelでエクスポート
+            </a>
+        </div>
+    </div>
 </body>
 </html>
